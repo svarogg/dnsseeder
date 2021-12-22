@@ -297,13 +297,10 @@ func (m *Manager) prunePeers() {
 	now := time.Now()
 	m.mtx.Lock()
 	for k, node := range m.nodes {
-		if now.Sub(node.LastSeen) > pruneExpireTimeout {
-			delete(m.nodes, k)
-			count++
-			continue
-		}
-		if !node.LastSuccess.IsZero() &&
-			now.Sub(node.LastSuccess) > pruneExpireTimeout {
+		if (now.Sub(node.LastSeen) > pruneExpireTimeout) ||
+			(node.LastSuccess.IsZero()) ||
+			(now.Sub(node.LastSuccess) > pruneExpireTimeout) {
+
 			delete(m.nodes, k)
 			count++
 			continue
